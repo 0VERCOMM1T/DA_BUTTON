@@ -64,8 +64,8 @@ export default function App() {
 
   // Place images under /public/photos/... and reference with absolute paths:
   const imageList = [
-    { url: "/public/NewPurdueArch.jpg", coords: [40.4311, -86.9164] },
-    { url: "/public/EngineeringFountain.jpg", coords: [40.42864, -86.91379] }, // note spelling corrected
+    { url: "/NewPurdueArch.jpg", coords: [40.4311, -86.9164] },
+    { url: "/EngineeringFountain.jpg", coords: [40.42864, -86.91379] }, // note spelling corrected
     // Add more: { url: "/photos/SomePlace.jpg", coords: [lat, lng] },
   ];
 
