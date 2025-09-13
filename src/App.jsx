@@ -17,8 +17,8 @@ function GuessMap({ onGuess, markerPos }) {
 
 export default function App() {
   const imageList = [
-    { url: 'public/NewPurdueArch.jpg', coords: [40.4231, -86.9215] },
-    { url: 'public/EngineeringFoundain.jpg', coords: [40.4231, -86.9215] },
+    { url: 'public/NewPurdueArch.jpg', coords: [40.4311, -86.9164] },
+    { url: 'public/EngineeringFoundain.jpg', coords: [40.428640, -86.913790] },
     // Add more images here
   ];
 
@@ -28,9 +28,9 @@ export default function App() {
   const [showAnswer, setShowAnswer] = useState(false);
 
   const campusBounds = [
-    [40.418, -86.930], // SW
-    [40.429, -86.913], // NE
-  ];
+  [40.4040, -86.9600], // SW (south of the airport / US-231 area)
+  [40.4645, -86.8850], // NE (north of Research Park / toward Salisbury–Sagamore)
+];
 
   const revealImage = () => {
     const randomIndex = Math.floor(Math.random() * imageList.length);
