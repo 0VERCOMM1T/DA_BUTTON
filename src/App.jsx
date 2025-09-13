@@ -26,8 +26,8 @@ export default function App() {
   const [showAnswer, setShowAnswer] = useState(false);
 
   const campusBounds = [
-    [40.4180, -86.9300], 
-    [40.4290, -86.9130],
+    [40.418, -86.930], // SW
+    [40.429, -86.913], // NE
   ];
 
   const revealImage = () => {
@@ -38,8 +38,10 @@ export default function App() {
     setShowAnswer(false);
   };
 
+  // Calculate distance on every click
   const handleGuess = (clickedCoords) => {
     setGuess(clickedCoords);
+
     if (currentImageIndex !== null) {
       const actual = imageList[currentImageIndex].coords;
       const from = turf.point([clickedCoords[1], clickedCoords[0]]);
@@ -55,57 +57,129 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Purdue Campus Guess Game</h1>
-      <button onClick={revealImage}>Reveal Image</button>
-      {guess && !showAnswer && (
-        <button onClick={handleRevealAnswer} style={{ marginLeft: '10px' }}>
-          Reveal Answer
+    <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>
+        Purdue Campus Guess Game
+      </h1>
+
+      {/* Buttons */}
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <button
+          onClick={revealImage}
+          style={{
+            padding: '10px 20px',
+            margin: '5px',
+            borderRadius: '6px',
+            border: 'none',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Reveal Image
         </button>
-      )}
-
-      {currentImageIndex !== null && (
-        <div>
-          <br />
-          <img
-            src={imageList[currentImageIndex].url}
-            alt="Guess location"
-            style={{ maxWidth: '600px' }}
-          />
-        </div>
-      )}
-
-      <br />
-      <MapContainer
-        center={[40.4237, -86.9212]}
-        zoom={16}
-        style={{ height: '500px', width: '100%', marginTop: '20px' }}
-        maxBounds={campusBounds}
-        maxBoundsViscosity={1.0}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <GuessMap onGuess={handleGuess} markerPos={guess} />
-        {showAnswer && currentImageIndex !== null && (
-          <>
-            {/* Use CircleMarker as a simple colored answer marker */}
-            <CircleMarker
-              center={imageList[currentImageIndex].coords}
-              radius={10}
-              pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.8 }}
-            />
-            <Polyline
-              positions={[guess, imageList[currentImageIndex].coords]}
-              color="red"
-            />
-          </>
+        {guess && !showAnswer && (
+          <button
+            onClick={handleRevealAnswer}
+            style={{
+              padding: '10px 20px',
+              margin: '5px',
+              borderRadius: '6px',
+              border: 'none',
+              backgroundColor: '#f44336',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            Reveal Answer
+          </button>
         )}
-      </MapContainer>
+      </div>
 
-      {distance && (
-        <div style={{ marginTop: '20px', fontSize: '18px', fontWeight: 'bold' }}>
-          Your guess was {distance} km away from the correct location!
+      {/* Main layout: left = image+map, right = distance */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center', // center the layout
+          gap: '40px', // space between left and right
+        }}
+      >
+        {/* Left column */}
+        <div style={{ flex: '0 0 600px', maxWidth: '600px' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '10px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              padding: '20px',
+            }}
+          >
+            {currentImageIndex !== null && (
+              <div>
+                <img
+                  src={imageList[currentImageIndex].url}
+                  alt="Guess location"
+                  style={{ width: '100%', borderRadius: '8px', objectFit: 'cover' }}
+                />
+              </div>
+            )}
+
+            <div style={{ height: '500px', borderRadius: '8px', overflow: 'hidden' }}>
+              <MapContainer
+                center={[40.4237, -86.9212]}
+                zoom={16}
+                style={{ width: '100%', height: '100%' }}
+                maxBounds={campusBounds}
+                maxBoundsViscosity={1.0}
+                scrollWheelZoom={true}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <GuessMap onGuess={handleGuess} markerPos={guess} />
+                {showAnswer && currentImageIndex !== null && (
+                  <>
+                    <CircleMarker
+                      center={imageList[currentImageIndex].coords}
+                      radius={10}
+                      pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.8 }}
+                    />
+                    <Polyline
+                      positions={[guess, imageList[currentImageIndex].coords]}
+                      color="red"
+                    />
+                  </>
+                )}
+              </MapContainer>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Right column */}
+        <div
+          style={{
+            flex: '0 0 250px',
+            minWidth: '200px',
+            backgroundColor: '#fff',
+            borderRadius: '10px',
+            padding: '20px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#555',
+            minHeight: '500px', // match map height
+          }}
+        >
+          {distance ? `Distance from actual location: ${distance} km` : 'Click on the map to guess!'}
+        </div>
+      </div>
     </div>
   );
 }
