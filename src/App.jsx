@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polyline, CircleMarker, useMapEvents } from 'react-leaflet';
 import * as turf from '@turf/turf';
 import 'leaflet/dist/leaflet.css';
 
 // Component to handle map clicks
-function GuessMap({ onGuess }) {
-  const [markerPos, setMarkerPos] = useState(null);
-
+function GuessMap({ onGuess, markerPos }) {
   useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng;
-      setMarkerPos([lat, lng]);
       onGuess([lat, lng]);
     },
   });
@@ -19,19 +16,18 @@ function GuessMap({ onGuess }) {
 }
 
 export default function App() {
-  // Local image list with actual coordinates
   const imageList = [
-    { url: '/images/download.jpg', coords: [40.4231, -86.9215] } // ADD MORE IMAGES + COORDINATES HERE
+    { url: '/images/download.jpg', coords: [40.4231, -86.9215] },
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
   const [guess, setGuess] = useState(null);
   const [distance, setDistance] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
 
-  // Purdue campus bounds
   const campusBounds = [
-    [40.4180, -86.9300], // SW //CHANGE THESE BOUNDS TO REFLECT ALL OF PURDUE CAMPUS
-    [40.4290, -86.9130], // NE
+    [40.4180, -86.9300], 
+    [40.4290, -86.9130],
   ];
 
   const revealImage = () => {
@@ -39,6 +35,7 @@ export default function App() {
     setCurrentImageIndex(randomIndex);
     setGuess(null);
     setDistance(null);
+    setShowAnswer(false);
   };
 
   const handleGuess = (clickedCoords) => {
@@ -52,10 +49,20 @@ export default function App() {
     }
   };
 
+  const handleRevealAnswer = () => {
+    if (!guess || currentImageIndex === null) return;
+    setShowAnswer(true);
+  };
+
   return (
     <div style={{ padding: '20px' }}>
       <h1>Purdue Campus Guess Game</h1>
       <button onClick={revealImage}>Reveal Image</button>
+      {guess && !showAnswer && (
+        <button onClick={handleRevealAnswer} style={{ marginLeft: '10px' }}>
+          Reveal Answer
+        </button>
+      )}
 
       {currentImageIndex !== null && (
         <div>
@@ -77,7 +84,21 @@ export default function App() {
         maxBoundsViscosity={1.0}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <GuessMap onGuess={handleGuess} />
+        <GuessMap onGuess={handleGuess} markerPos={guess} />
+        {showAnswer && currentImageIndex !== null && (
+          <>
+            {/* Use CircleMarker as a simple colored answer marker */}
+            <CircleMarker
+              center={imageList[currentImageIndex].coords}
+              radius={10}
+              pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.8 }}
+            />
+            <Polyline
+              positions={[guess, imageList[currentImageIndex].coords]}
+              color="red"
+            />
+          </>
+        )}
       </MapContainer>
 
       {distance && (
