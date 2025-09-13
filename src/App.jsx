@@ -18,6 +18,7 @@ function GuessMap({ onGuess, markerPos }) {
 export default function App() {
   const imageList = [
     { url: '/images/download.jpg', coords: [40.4231, -86.9215] },
+    // Add more images here
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
@@ -38,7 +39,6 @@ export default function App() {
     setShowAnswer(false);
   };
 
-  // Calculate distance on every click
   const handleGuess = (clickedCoords) => {
     setGuess(clickedCoords);
 
@@ -56,9 +56,28 @@ export default function App() {
     setShowAnswer(true);
   };
 
+  const getDistanceColor = (distance) => {
+    if (!distance) return '#ddd';
+    const distNum = parseFloat(distance);
+    if (distNum < 0.2) return '#4CAF50';
+    if (distNum < 0.5) return '#FFC107';
+    return '#F44336';
+  };
+
   return (
-    <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        margin: 0,
+        padding: 0,
+        backgroundColor: '#f0f2f5',
+        fontFamily: 'sans-serif',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <h1 style={{ textAlign: 'center', margin: '20px 0', color: '#333' }}>
         Purdue Campus Guess Game
       </h1>
 
@@ -98,19 +117,20 @@ export default function App() {
         )}
       </div>
 
-      {/* Main layout: left = image+map, right = distance */}
+      {/* Main content */}
       <div
         style={{
+          flex: 1,
           display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center', // center the layout
-          gap: '40px', // space between left and right
+          gap: '40px',
+          padding: '20px',
         }}
       >
-        {/* Left column */}
-        <div style={{ flex: '0 0 600px', maxWidth: '600px' }}>
+        {/* Left column: image + map */}
+        <div style={{ flex: 2, minWidth: '500px' }}>
           <div
             style={{
+              height: '100%',
               backgroundColor: 'white',
               borderRadius: '10px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -121,16 +141,19 @@ export default function App() {
             }}
           >
             {currentImageIndex !== null && (
-              <div>
-                <img
-                  src={imageList[currentImageIndex].url}
-                  alt="Guess location"
-                  style={{ width: '100%', borderRadius: '8px', objectFit: 'cover' }}
-                />
-              </div>
+              <img
+                src={imageList[currentImageIndex].url}
+                alt="Guess location"
+                style={{
+                  width: '100%',
+                  height: '250px',       // fixed height
+                  borderRadius: '8px',
+                  objectFit: 'contain',  // show entire image
+                }}
+              />
             )}
 
-            <div style={{ height: '500px', borderRadius: '8px', overflow: 'hidden' }}>
+            <div style={{ flex: 1, borderRadius: '8px', overflow: 'hidden' }}>
               <MapContainer
                 center={[40.4237, -86.9212]}
                 zoom={16}
@@ -159,12 +182,12 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right column */}
+        {/* Right column: distance */}
         <div
           style={{
-            flex: '0 0 250px',
-            minWidth: '200px',
-            backgroundColor: '#fff',
+            flex: 1,
+            minWidth: '250px',
+            backgroundColor: getDistanceColor(distance),
             borderRadius: '10px',
             padding: '20px',
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -173,8 +196,7 @@ export default function App() {
             justifyContent: 'center',
             fontSize: '20px',
             fontWeight: 'bold',
-            color: '#555',
-            minHeight: '500px', // match map height
+            color: '#fff',
           }}
         >
           {distance ? `Distance from actual location: ${distance} km` : 'Click on the map to guess!'}
