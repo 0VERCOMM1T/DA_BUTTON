@@ -17,7 +17,8 @@ function GuessMap({ onGuess, markerPos }) {
 
 export default function App() {
   const imageList = [
-    { url: '/images/download.jpg', coords: [40.4231, -86.9215] },
+    { url: 'public/NewPurdueArch.jpg', coords: [40.4231, -86.9215] },
+    { url: 'public/EngineeringFoundain.jpg', coords: [40.4231, -86.9215] },
     // Add more images here
   ];
 
