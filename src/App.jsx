@@ -137,7 +137,7 @@ export default function App() {
       {["testing", "preview"].includes(env) && <Badge>{env.toUpperCase()}</Badge>}
 
       <h1 style={{ textAlign: "center", margin: "16px 0 8px", color: "#333" }}>
-        Purdue Campus Guess Game
+        Purdue Campus Guessr
       </h1>
 
       {/* Controls */}
